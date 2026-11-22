@@ -1,0 +1,332 @@
+/* =========================================================
+   Datingb.b by industryb.b
+   Palette: #A7001E (red), white, #4B5943 (green), #F6B12D (yellow)
+   Contrast notes:
+   - white on red: 7.9:1, green on white: 7.5:1, red on white: 7.9:1
+   - green on yellow: 4.0:1 (used for large bold text only)
+   - yellow is never used for text on white (1.9:1)
+   ========================================================= */
+
+:root {
+  --red: #A7001E;
+  --green: #4B5943;
+  --yellow: #F6B12D;
+  --white: #FFFFFF;
+  --ink: #1F2420;
+  --line: #E6E2DC;
+  --muted: #5A5F58;
+
+  --font-title: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--green);
+}
+
+/* Mobile format only: a single column, centered on larger screens */
+.app {
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--white);
+  position: relative;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.25);
+}
+
+.screen { min-height: 100dvh; display: flex; flex-direction: column; }
+.screen[hidden] { display: none; }
+
+/* ---------- Signature ---------- */
+.signature {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding: 20px 0 calc(24px + env(safe-area-inset-bottom));
+}
+
+/* ---------- Screen 1: splash ---------- */
+.splash {
+  background: var(--red);
+  color: var(--white);
+  align-items: center;
+  justify-content: center;
+}
+.splash .signature { position: absolute; left: 0; right: 0; bottom: 0; color: var(--white); }
+
+.app-name {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: none;
+  border: 0;
+  padding: 24px 32px;
+  color: var(--white);
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 46px;
+  letter-spacing: -0.5px;
+  cursor: pointer;
+  border-radius: 20px;
+}
+.app-name:focus-visible { outline: 3px solid var(--white); outline-offset: 4px; }
+.cherry { width: 84px; height: 84px; }
+.tap-hint { margin: 8px 0 0; font-size: 16px; color: var(--white); }
+
+/* ---------- Screen 2: profile ---------- */
+.profile { background: var(--white); }
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--red);
+  padding: 16px 20px;
+}
+.topbar-logo {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--white);
+}
+
+.content { flex: 1; padding: 24px 20px 8px; }
+
+h1 {
+  margin: 0 0 6px;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 1.15;
+  color: var(--red);
+}
+.intro, .hint { margin: 0 0 8px; color: var(--muted); }
+.req { color: var(--red); font-weight: 700; }
+
+.error-box {
+  margin: 16px 0;
+  padding: 14px 16px;
+  border: 2px solid var(--red);
+  border-radius: 12px;
+  color: var(--red);
+  font-weight: 500;
+}
+
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+
+.block { margin: 32px 0; }
+.block > legend {
+  padding: 0;
+  margin-bottom: 14px;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--red);
+}
+
+.field { display: block; margin-bottom: 18px; }
+.label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--green);
+}
+.group { margin-bottom: 20px; }
+.group > legend { padding: 0; }
+
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  background: var(--white);
+  border: 2px solid var(--green);
+  border-radius: 12px;
+  appearance: none;
+}
+select {
+  background-image: linear-gradient(45deg, transparent 50%, var(--green) 50%),
+                    linear-gradient(135deg, var(--green) 50%, transparent 50%);
+  background-position: calc(100% - 22px) 21px, calc(100% - 16px) 21px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 40px;
+}
+textarea { resize: vertical; min-height: 84px; }
+
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 2px;
+}
+
+input[type="range"] { width: 100%; accent-color: var(--green); height: 32px; }
+
+/* ---------- Chips (choices proposed by the Ajax request) ---------- */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; }
+.chip input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+.chip span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 2px solid var(--green);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--green);
+  font-weight: 500;
+  font-size: 15px;
+}
+.chip input:checked + span {
+  background: var(--green);
+  color: var(--white);
+  font-weight: 700;
+}
+.chip input:focus-visible + span { outline: 3px solid var(--red); outline-offset: 2px; }
+
+/* ---------- Photos ---------- */
+.photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.photo { position: relative; display: block; }
+.photo input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 4px solid transparent;
+}
+.photo input:checked + img { border-color: var(--red); }
+.photo input:checked ~ .photo-check { display: flex; }
+.photo input:focus-visible + img { outline: 3px solid var(--red); outline-offset: 3px; }
+.photo-check {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--white);
+  font-weight: 700;
+}
+
+/* ---------- Prompts ---------- */
+.prompt { margin-bottom: 18px; }
+
+/* ---------- Match bar ---------- */
+.signature-dark { color: var(--red); }
+
+.matchbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  background: var(--white);
+  border-top: 2px solid var(--line);
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+}
+.progress { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.progress-fill { height: 100%; width: 0; background: var(--green); transition: width 0.25s ease; }
+.progress-text { margin: 8px 0 12px; font-size: 14px; color: var(--green); min-height: 20px; }
+
+.actions { display: flex; justify-content: center; align-items: center; gap: 40px; padding: 4px 0 2px; }
+
+.circle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+.circle-btn:active:not(:disabled) { transform: scale(0.94); }
+.circle-btn:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+
+/* White cross button */
+.circle-btn-pass { width: 64px; height: 64px; background: var(--white); color: var(--green); }
+.circle-btn-pass svg { width: 26px; height: 26px; }
+
+/* Red cherry button (Match) */
+.circle-btn-match { width: 74px; height: 74px; background: var(--red); color: var(--white); }
+.circle-btn-match svg { width: 44px; height: 44px; }
+.circle-btn-match:disabled {
+  background: var(--line);
+  color: var(--muted);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ---------- Screen 3: result ---------- */
+.match {
+  background: var(--yellow);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
+.match-title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 46px;
+  line-height: 1.12;
+  color: var(--white);
+  /* White on #F6B12D is only 1.9:1: a soft green shadow keeps the text readable. */
+  text-shadow: 0 2px 0 rgba(75, 89, 67, 0.55), 0 0 16px rgba(75, 89, 67, 0.35);
+  animation: pop 0.45s ease-out;
+}
+.edit-btn {
+  margin-top: 32px;
+  padding: 12px 18px;
+  background: none;
+  border: 0;
+  color: var(--green);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 18px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.edit-btn:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; border-radius: 8px; }
+.match .signature { position: absolute; left: 0; right: 0; bottom: 0; color: var(--green); }
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .match-title { animation: none; }
+  .progress-fill { transition: none; }
+}

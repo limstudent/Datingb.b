@@ -1,0 +1,103 @@
+{
+  "photos": [
+    {
+      "id": "photo1",
+      "src": "images/photo1.svg",
+      "alt": "Portrait 1"
+    },
+    {
+      "id": "photo2",
+      "src": "images/photo2.svg",
+      "alt": "Portrait 2"
+    },
+    {
+      "id": "photo3",
+      "src": "images/photo3.svg",
+      "alt": "Portrait 3"
+    },
+    {
+      "id": "photo4",
+      "src": "images/photo4.svg",
+      "alt": "Portrait 4"
+    }
+  ],
+  "languages": [
+    "Thai",
+    "English",
+    "French",
+    "Italian",
+    "Mandarin",
+    "Japanese",
+    "Korean",
+    "Spanish"
+  ],
+  "lookingFor": [
+    "Serious relationship",
+    "Marriage",
+    "A night out",
+    "I don't know yet"
+  ],
+  "kids": [
+    "No",
+    "Yes",
+    "Later",
+    "Undecided"
+  ],
+  "tobacco": [
+    "Non-smoker",
+    "Occasional",
+    "Smoker"
+  ],
+  "alcohol": [
+    "No",
+    "Socially",
+    "Often"
+  ],
+  "drugs": [
+    "Never",
+    "Occasionally"
+  ],
+  "pets": [
+    "Cat",
+    "Dog",
+    "None"
+  ],
+  "zodiac": [
+    "Aries",
+    "Taurus",
+    "Gemini",
+    "Cancer",
+    "Leo",
+    "Virgo",
+    "Libra",
+    "Scorpio",
+    "Sagittarius",
+    "Capricorn",
+    "Aquarius",
+    "Pisces"
+  ],
+  "hobbies": [
+    "Sport",
+    "Cooking",
+    "Reading",
+    "Video games",
+    "Hiking",
+    "Cinema",
+    "Concerts",
+    "Travel",
+    "Photography",
+    "Dancing",
+    "Karaoke",
+    "Music",
+    "Art",
+    "Football"
+  ],
+  "prompts": [
+    "I changed my mind about...",
+    "I am proud of... but nobody notices",
+    "My perfect Sunday is...",
+    "The secret to getting along with me is...",
+    "My hidden talent is...",
+    "Live to work or work to live?"
+  ]
+}

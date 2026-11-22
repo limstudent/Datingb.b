@@ -1,0 +1,57 @@
+name: Deploy Datingb.b
+
+# The app updates itself: every push on main publishes the new version
+# on GitHub Pages. It can also be started by hand from the Actions tab.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time, the latest push wins
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check the data and the photos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check proposals.json and photo files
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          with open("data/proposals.json", encoding="utf-8") as f:
+              data = json.load(f)
+          missing = [p["src"] for p in data["photos"] if not os.path.isfile(p["src"])]
+          if missing:
+              print("Missing photo files:", ", ".join(missing))
+              sys.exit(1)
+          print("OK:", len(data["photos"]), "photos found")
+          PY
+
+  deploy:
+    name: Publish on GitHub Pages
+    needs: check
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare the site folder
+        run: |
+          mkdir _site
+          cp -r index.html css js data images fonts _site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

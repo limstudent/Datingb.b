@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#A7001E">
+  <title>Datingb.b</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1: splash, the app name -->
+  <section id="screen-splash" class="screen splash">
+    <button id="app-name" class="app-name" type="button" aria-label="Open Datingb.b">
+      <svg class="cherry" viewBox="-60 -60 120 120" aria-hidden="true">
+        <path d="M -14 14 C -12 -8 -2 -22 14 -30" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M 16 16 C 14 -6 12 -18 14 -30" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M 14 -30 C 24 -44 42 -42 46 -34 C 36 -26 22 -24 14 -30 Z" fill="#fff"/>
+        <circle cx="-15" cy="20" r="18" fill="#fff"/>
+        <circle cx="17" cy="22" r="18" fill="#fff"/>
+      </svg>
+      <span>Datingb.b</span>
+    </button>
+    <p class="tap-hint">Tap the name to start</p>
+    <footer class="signature">industryb.b</footer>
+  </section>
+
+  <!-- SCREEN 2: profile creation -->
+  <section id="screen-profile" class="screen profile" hidden>
+    <header class="topbar">
+      <span class="topbar-logo">Datingb.b</span>
+    </header>
+
+    <main class="content">
+      <h1>Create your profile</h1>
+      <p class="intro">Answer as your character. Fields with <span class="req">*</span> are required.</p>
+
+      <p id="load-error" class="error-box" role="alert" hidden></p>
+
+      <form id="profile-form" novalidate>
+
+        <!-- PHOTO -->
+        <fieldset class="block">
+          <legend>Photo <span class="req">*</span></legend>
+          <div id="photo-choices" class="photo-grid"></div>
+        </fieldset>
+
+        <!-- BASICS -->
+        <fieldset class="block">
+          <legend>Basic information</legend>
+
+          <label class="field">
+            <span class="label">First name <span class="req">*</span></span>
+            <input type="text" id="firstName" name="firstName" maxlength="30" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span class="label">Age <span class="req">*</span></span>
+            <input type="number" id="age" name="age" min="18" max="99" inputmode="numeric">
+          </label>
+
+          <label class="field">
+            <span class="label">Gender or pronouns</span>
+            <input type="text" id="pronouns" name="pronouns" maxlength="30" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span class="label">Height (cm)</span>
+            <input type="number" id="height" name="height" min="100" max="250" inputmode="numeric">
+          </label>
+
+          <label class="field">
+            <span class="label">City <span class="req">*</span></span>
+            <input type="text" id="city" name="city" maxlength="50" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span class="label">Maximum distance: <strong id="distance-value">25</strong> km</span>
+            <input type="range" id="distance" name="distance" min="1" max="100" value="25">
+          </label>
+
+          <label class="field">
+            <span class="label">Job and company, or studies <span class="req">*</span></span>
+            <input type="text" id="job" name="job" maxlength="60" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span class="label">Origin</span>
+            <input type="text" id="origin" name="origin" maxlength="50" autocomplete="off">
+          </label>
+
+          <fieldset class="group">
+            <legend class="label">Languages spoken</legend>
+            <div id="languages" class="chips"></div>
+          </fieldset>
+        </fieldset>
+
+        <!-- LIFESTYLE -->
+        <fieldset class="block">
+          <legend>Lifestyle and values</legend>
+
+          <fieldset class="group">
+            <legend class="label">What are you looking for? <span class="req">*</span></legend>
+            <div id="lookingFor" class="chips"></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend class="label">Children <span class="req">*</span></legend>
+            <div id="kids" class="chips"></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend class="label">Tobacco <span class="req">*</span></legend>
+            <div id="tobacco" class="chips"></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend class="label">Alcohol</legend>
+            <div id="alcohol" class="chips"></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend class="label">Drugs</legend>
+            <div id="drugs" class="chips"></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend class="label">Pets</legend>
+            <div id="pets" class="chips"></div>
+          </fieldset>
+
+          <label class="field">
+            <span class="label">Religion</span>
+            <input type="text" id="religion" name="religion" maxlength="40" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span class="label">Politics</span>
+            <input type="text" id="politics" name="politics" maxlength="40" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span class="label">Zodiac sign</span>
+            <select id="zodiac" name="zodiac"></select>
+          </label>
+        </fieldset>
+
+        <!-- INTERESTS -->
+        <fieldset class="block">
+          <legend>Interests and passions</legend>
+
+          <fieldset class="group">
+            <legend class="label">Pick at least 3 hobbies <span class="req">*</span></legend>
+            <div id="hobbies" class="chips"></div>
+          </fieldset>
+
+          <label class="field">
+            <span class="label">Favorite music</span>
+            <input type="text" id="music" name="music" maxlength="80" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span class="label">Favorite films and series</span>
+            <input type="text" id="shows" name="shows" maxlength="80" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span class="label">Favorite books</span>
+            <input type="text" id="books" name="books" maxlength="80" autocomplete="off">
+          </label>
+        </fieldset>
+
+        <!-- PROMPTS -->
+        <fieldset class="block">
+          <legend>Prompts</legend>
+          <p class="hint">Answer at least 3 prompts <span class="req">*</span></p>
+          <div id="prompts"></div>
+        </fieldset>
+
+      </form>
+    </main>
+
+    <footer class="signature signature-dark">industryb.b</footer>
+
+    <div class="matchbar">
+      <div class="progress" aria-hidden="true"><div id="progress-fill" class="progress-fill"></div></div>
+      <p id="progress-text" class="progress-text" aria-live="polite"></p>
+      <div class="actions">
+        <!-- Cross: clear the profile and start over -->
+        <button id="clear-btn" class="circle-btn circle-btn-pass" type="button" aria-label="Clear the profile and start over">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 5 L19 19 M19 5 L5 19" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <!-- Cherry: Match (unlocked when all required fields are filled) -->
+        <button id="match-btn" class="circle-btn circle-btn-match" type="submit" form="profile-form" aria-label="Match" disabled>
+          <svg viewBox="-52 -52 104 104" aria-hidden="true">
+            <path d="M -14 14 C -12 -8 -2 -22 14 -30" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M 16 16 C 14 -6 12 -18 14 -30" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M 14 -30 C 24 -44 42 -42 46 -34 C 36 -26 22 -24 14 -30 Z" fill="currentColor"/>
+            <circle cx="-15" cy="20" r="19" fill="currentColor"/>
+            <circle cx="17" cy="22" r="19" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 3: result -->
+  <section id="screen-match" class="screen match" hidden>
+    <h2 class="match-title">So, do you match or not?</h2>
+    <button id="edit-btn" class="edit-btn" type="button">Edit profile</button>
+    <footer class="signature">industryb.b</footer>
+  </section>
+
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>
