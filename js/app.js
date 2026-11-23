@@ -234,11 +234,59 @@ $("#distance").addEventListener("input", (event) => {
 form.addEventListener("input", updateState);
 form.addEventListener("change", updateState);
 
-form.addEventListener("submit", (event) => {
+function supabaseIsConfigured() {
+  const c = window.DATINGBB_CONFIG || {};
+  return Boolean(c.supabaseUrl && c.supabaseKey) &&
+    !c.supabaseUrl.includes("YOUR-PROJECT") && !c.supabaseKey.startsWith("YOUR-");
+}
+
+async function sendProfile(data) {
+  const c = window.DATINGBB_CONFIG;
+  const response = await fetch(`${c.supabaseUrl}/rest/v1/${c.table || "profiles"}`, {
+    method: "POST",
+    headers: {
+      apikey: c.supabaseKey,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    },
+    body: JSON.stringify({
+      first_name: data.firstName,
+      age: data.age,
+      city: data.city,
+      job: data.job,
+      photo: data.photo,
+      data: data,
+    }),
+  });
+  if (!response.ok) {
+    throw new Error("HTTP " + response.status);
+  }
+}
+
+let sending = false;
+
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (REQUIRED.some((rule) => !rule.ok())) return;
+  if (sending || REQUIRED.some((rule) => !rule.ok())) return;
   profile = collectProfile();
-  showScreen("match");
+
+  if (!supabaseIsConfigured()) {
+    showScreen("match");
+    return;
+  }
+
+  sending = true;
+  matchBtn.disabled = true;
+  progressText.textContent = "Sending...";
+  try {
+    await sendProfile(profile);
+    showScreen("match");
+  } catch (error) {
+    progressText.textContent = "The profile could not be sent. Check the connection and try again.";
+  } finally {
+    sending = false;
+    matchBtn.disabled = REQUIRED.some((rule) => !rule.ok());
+  }
 });
 
 $("#edit-btn").addEventListener("click", () => showScreen("profile"));
