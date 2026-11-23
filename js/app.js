@@ -22,6 +22,7 @@ const progressText = $("#progress-text");
 const loadError = $("#load-error");
 
 let profile = null; // filled when the Match button is clicked
+let customPhoto = null; // photo chosen from the phone: { blob, previewUrl, path }
 
 /* ---------- Screens ---------- */
 function showScreen(name) {
@@ -77,30 +78,120 @@ function renderChips(containerId, name, options, type) {
   }
 }
 
-function renderPhotos(photos) {
+function renderPhotos() {
   const container = $("#photo-choices");
   container.textContent = "";
-  photos.forEach((photo) => {
-    const label = document.createElement("label");
-    label.className = "photo";
+  container.append(createUploadTile());
+}
 
-    const input = document.createElement("input");
-    input.type = "radio";
-    input.name = "photo";
-    input.value = photo.src;
+/* ---------- Photo chosen from the phone ---------- */
+function createUploadTile() {
+  const tile = document.createElement("div");
+  tile.className = "photo-upload";
+  tile.id = "photo-upload";
 
-    const img = document.createElement("img");
-    img.src = photo.src;
-    img.alt = photo.alt || "Profile photo";
+  const input = document.createElement("input");
+  input.type = "file";
+  input.id = "photo-file";
+  input.className = "file-input";
+  input.accept = "image/*";
+  input.setAttribute("aria-label", "Add my photo");
 
-    const check = document.createElement("span");
-    check.className = "photo-check";
-    check.setAttribute("aria-hidden", "true");
-    check.textContent = "✓";
+  const img = document.createElement("img");
+  img.id = "upload-preview";
+  img.alt = "Your photo";
+  img.hidden = true;
 
-    label.append(input, img, check);
-    container.append(label);
+  const plus = document.createElement("span");
+  plus.className = "upload-plus";
+  plus.setAttribute("aria-hidden", "true");
+  plus.textContent = "+";
+
+  const text = document.createElement("span");
+  text.className = "upload-text";
+  text.id = "upload-text";
+  text.textContent = "Add my photo";
+
+  const check = document.createElement("span");
+  check.className = "photo-check";
+  check.setAttribute("aria-hidden", "true");
+  check.textContent = "\u2713";
+
+  tile.append(input, img, plus, text, check);
+  input.addEventListener("change", onPhotoChosen);
+  return tile;
+}
+
+function photoMessage(message) {
+  const el = $("#photo-message");
+  el.textContent = message;
+  el.hidden = message === "";
+}
+
+function showCustomPhoto() {
+  const tile = $("#photo-upload");
+  if (!tile) return;
+  tile.classList.toggle("selected", customPhoto !== null);
+  const img = $("#upload-preview");
+  img.hidden = customPhoto === null;
+  img.src = customPhoto ? customPhoto.previewUrl : "";
+  $("#upload-text").textContent = customPhoto ? "Change photo" : "Add my photo";
+}
+
+function clearCustomPhoto() {
+  if (customPhoto) URL.revokeObjectURL(customPhoto.previewUrl);
+  customPhoto = null;
+  showCustomPhoto();
+}
+
+function randomId() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return Date.now() + "-" + Math.random().toString(16).slice(2);
+}
+
+// Resize to 1080 px max and convert to JPEG: lighter to send, same format for everyone
+function resizeImage(file, maxSize = 1080) {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("Not an image"));
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Conversion failed"))), "image/jpeg", 0.85);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Image could not be read"));
+    };
+    img.src = url;
   });
+}
+
+async function onPhotoChosen(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  photoMessage("");
+  try {
+    const blob = await resizeImage(file);
+    clearCustomPhoto();
+    customPhoto = { blob, previewUrl: URL.createObjectURL(blob), path: randomId() + ".jpg" };
+    showCustomPhoto();
+  } catch (error) {
+    photoMessage("This image could not be read. Please use a JPG or PNG photo.");
+  }
+  event.target.value = ""; // lets the same file be chosen again
+  updateState();
 }
 
 function renderSelect(selectId, options) {
@@ -141,7 +232,7 @@ function renderPrompts(prompts) {
 }
 
 function renderProposals(data) {
-  renderPhotos(data.photos);
+  renderPhotos();
   renderChips("languages", "languages", data.languages, "checkbox");
   renderChips("lookingFor", "lookingFor", data.lookingFor, "radio");
   renderChips("kids", "kids", data.kids, "radio");
@@ -161,7 +252,7 @@ const filledPrompts = () =>
   [...form.querySelectorAll("textarea[data-prompt]")].filter((t) => t.value.trim() !== "").length;
 
 const REQUIRED = [
-  { label: "Photo", ok: () => checkedCount("photo") === 1 },
+  { label: "Photo", ok: () => customPhoto !== null },
   { label: "First name", ok: () => value("firstName") !== "" },
   { label: "Age", ok: () => { const a = Number(value("age")); return a >= 18 && a <= 99; } },
   { label: "City", ok: () => value("city") !== "" },
@@ -195,7 +286,7 @@ function collectProfile() {
   const getAll = (name) => [...form.querySelectorAll(`input[name="${name}"]:checked`)].map((i) => i.value);
 
   return {
-    photo: getRadio("photo"),
+    photo: "photos/" + customPhoto.path,
     firstName: value("firstName"),
     age: Number(value("age")),
     pronouns: value("pronouns"),
@@ -234,6 +325,7 @@ $("#distance").addEventListener("input", (event) => {
 form.addEventListener("input", updateState);
 form.addEventListener("change", updateState);
 
+/* ---------- Send the profile to Supabase (Ajax) ---------- */
 function supabaseIsConfigured() {
   const c = window.DATINGBB_CONFIG || {};
   return Boolean(c.supabaseUrl && c.supabaseKey) &&
@@ -245,6 +337,7 @@ async function sendProfile(data) {
   const response = await fetch(`${c.supabaseUrl}/rest/v1/${c.table || "profiles"}`, {
     method: "POST",
     headers: {
+      // Publishable keys go in the apikey header only
       apikey: c.supabaseKey,
       "Content-Type": "application/json",
       Prefer: "return=minimal",
@@ -263,6 +356,21 @@ async function sendProfile(data) {
   }
 }
 
+async function uploadPhoto(photo) {
+  const c = window.DATINGBB_CONFIG;
+  const response = await fetch(`${c.supabaseUrl}/storage/v1/object/${c.photoBucket || "photos"}/${photo.path}`, {
+    method: "POST",
+    headers: {
+      apikey: c.supabaseKey,
+      "Content-Type": "image/jpeg",
+    },
+    body: photo.blob,
+  });
+  if (!response.ok) {
+    throw new Error("Photo upload HTTP " + response.status);
+  }
+}
+
 let sending = false;
 
 form.addEventListener("submit", async (event) => {
@@ -270,7 +378,9 @@ form.addEventListener("submit", async (event) => {
   if (sending || REQUIRED.some((rule) => !rule.ok())) return;
   profile = collectProfile();
 
+  // Without Supabase settings, the app still works (demo mode)
   if (!supabaseIsConfigured()) {
+    console.warn("Supabase is not configured: the profile and the photo were not sent (see js/config.js).");
     showScreen("match");
     return;
   }
@@ -279,6 +389,7 @@ form.addEventListener("submit", async (event) => {
   matchBtn.disabled = true;
   progressText.textContent = "Sending...";
   try {
+    await uploadPhoto(customPhoto); // photo first, then the profile
     await sendProfile(profile);
     showScreen("match");
   } catch (error) {
@@ -298,6 +409,8 @@ $("#clear-btn").addEventListener("click", () => {
   form.querySelectorAll("input").forEach((input) => delete input.dataset.was);
   $("#distance-value").textContent = $("#distance").value;
   profile = null;
+  clearCustomPhoto();
+  photoMessage("");
   updateState();
   window.scrollTo(0, 0);
 });
